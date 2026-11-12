@@ -4,7 +4,6 @@
 #define POWER_BLUE_ROBOTICS_POWERSENSEMODULETASK_TASK_HPP
 
 #include "power_blue_robotics/PowerSenseModuleTaskBase.hpp"
-#include <base/Float.hpp>
 
 namespace power_blue_robotics {
 
@@ -12,8 +11,8 @@ namespace power_blue_robotics {
         friend class PowerSenseModuleTaskBase;
 
     private:
-        size_t m_current_channel = 0;
-        size_t m_voltage_channel = 0;
+        int m_current_index = -1;
+        int m_voltage_index = -1;
 
     public:
         PowerSenseModuleTask(

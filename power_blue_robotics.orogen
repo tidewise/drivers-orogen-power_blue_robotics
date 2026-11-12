@@ -1,6 +1,7 @@
 name "power_blue_robotics"
 
 import_types_from "power_blue_roboticsTypes.hpp"
+import_types_from "power_base"
 import_types_from "std"
 import_types_from "raw_io"
 
@@ -9,13 +10,15 @@ import_types_from "raw_io"
 task_context "PowerSenseModuleTask" do
     needs_configuration
 
-    property "current_channel", "uint8_t", 2
-    property "voltage_channel", "uint8_t", 3
+    # Index within the analog_samples port data for current sensing
+    property "current_index", "int", -1
+    # Index within the analog_samples port data for voltage sensing
+    property "voltage_index", "int", -1
 
     input_port "analog_samples", "/std/vector<raw_io/Analog>"
 
-    output_port "voltage", "/power_blue_robotics/Voltage"
-    output_port "current", "/power_blue_robotics/Current"
+    output_port "voltage", "/power_base/samples/Voltage"
+    output_port "current", "/power_base/samples/Current"
 
     exception_states "INVALID_ANALOG_SAMPLES"
 

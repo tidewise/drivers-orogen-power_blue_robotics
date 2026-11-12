@@ -9,6 +9,9 @@ import_types_from "raw_io"
 task_context "PowerSenseModuleTask" do
     needs_configuration
 
+    property "current_channel", "uint8_t", 2
+    property "voltage_channel", "uint8_t", 3
+
     input_port "analog_samples", "/std/vector<raw_io/Analog>"
 
     output_port "voltage", "/power_blue_robotics/Voltage"

@@ -15,7 +15,9 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         )
     end
 
-    it "outputs voltage and current scaled with default parameters" do
+    it "outputs voltage and current" do
+        task.properties.current_channel = 2
+        task.properties.voltage_channel = 3
         syskit_configure_and_start(task)
 
         now = Time.now
@@ -38,7 +40,7 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
                  have_one_new_sample(task.current_port)]
             end
 
-        expected_voltage = 1.2 * 11.0 
+        expected_voltage = 1.2 * 11.0
         assert_in_delta expected_voltage, voltage_sample.value, 1e-4
         assert_in_delta time_voltage, voltage_sample.time, 1e-4
         expected_current = (0.5 - 0.33) * 37.8788

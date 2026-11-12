@@ -17,6 +17,9 @@ bool PowerSenseModuleTask::configureHook()
 {
     if (!PowerSenseModuleTaskBase::configureHook())
         return false;
+
+    m_current_channel = _current_channel.get();
+    m_voltage_channel = _voltage_channel.get();
     return true;
 }
 bool PowerSenseModuleTask::startHook()
@@ -34,18 +37,18 @@ void PowerSenseModuleTask::updateHook()
         return;
     }
 
-    if (analog_samples.size() <= CURRENT_CHANNEL ||
-        analog_samples.size() <= VOLTAGE_CHANNEL) {
+    if (analog_samples.size() <= m_current_channel ||
+        analog_samples.size() <= m_voltage_channel) {
         exception(INVALID_ANALOG_SAMPLES);
         return;
     }
 
     Voltage voltage;
-    voltage.time = analog_samples[VOLTAGE_CHANNEL].time;
-    voltage.value = analog_samples[VOLTAGE_CHANNEL].data * VOLTAGE_GAIN;
+    voltage.time = analog_samples[m_voltage_channel].time;
+    voltage.value = analog_samples[m_voltage_channel].data * VOLTAGE_GAIN;
     Current current;
-    current.time = analog_samples[CURRENT_CHANNEL].time;
-    float current_reading_voltage = analog_samples[CURRENT_CHANNEL].data;
+    current.time = analog_samples[m_current_channel].time;
+    float current_reading_voltage = analog_samples[m_current_channel].data;
     current.value = (current_reading_voltage - CURRENT_OFFSET) * CURRENT_GAIN;
 
     _voltage.write(voltage);

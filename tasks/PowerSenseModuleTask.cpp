@@ -54,9 +54,13 @@ void PowerSenseModuleTask::updateHook()
         return;
     }
 
-    if (static_cast<int>(analog_samples.size()) <= m_current_index ||
-        static_cast<int>(analog_samples.size()) <= m_voltage_index) {
-        exception(INVALID_ANALOG_SAMPLES);
+    if (static_cast<int>(analog_samples.size()) <= m_current_index) {
+        exception(INVALID_CURRENT_INDEX);
+        return;
+    }
+
+    if (static_cast<int>(analog_samples.size()) <= m_voltage_index) {
+        exception(INVALID_VOLTAGE_INDEX);
         return;
     }
 

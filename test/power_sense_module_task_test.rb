@@ -93,22 +93,38 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         assert_in_delta time_current, current_sample.time, 1e-4
     end
 
-    it "transitions to exception state if the input vector has insufficient readings" do
+    it "transitions to exception if current_index is out of bounds" do
         task.properties.current_index = 2
-        task.properties.voltage_index = 3
+        task.properties.voltage_index = 1
         syskit_configure_and_start(task)
 
         now = Time.now
         samples = create_analog_samples(
             [
                 [now, 0.0],
-                [now, 0.0],
-                [now, 3.0]
+                [now, 0.0]
             ]
         )
 
         expect_execution { syskit_write task.analog_samples_port, samples }
-            .to_emit task.invalid_analog_samples_event
+            .to_emit task.invalid_current_index_event
+    end
+
+    it "transitions to exception if voltage_index is out of bounds" do
+        task.properties.current_index = 1
+        task.properties.voltage_index = 2
+        syskit_configure_and_start(task)
+
+        now = Time.now
+        samples = create_analog_samples(
+            [
+                [now, 0.0],
+                [now, 0.0]
+            ]
+        )
+
+        expect_execution { syskit_write task.analog_samples_port, samples }
+            .to_emit task.invalid_voltage_index_event
     end
 
     def create_analog_sample(time, data)

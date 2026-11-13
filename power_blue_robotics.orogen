@@ -12,7 +12,7 @@ import_types_from "raw_io"
 task_context "PowerSenseModuleTask" do
     needs_configuration
 
-    # Gain applied to the offset-corrected analog reading to convert it to 
+    # Gain applied to the offset-corrected analog reading to convert it to
     # measured system voltage (V/V)
     property "voltage_gain", "double", 11.0
     # Voltage offset (in Volts) subtracted from the analog voltage reading
@@ -34,7 +34,7 @@ task_context "PowerSenseModuleTask" do
     output_port "voltage", "/power_base/samples/Voltage"
     output_port "current", "/power_base/samples/Current"
 
-    exception_states "INVALID_ANALOG_SAMPLES"
+    exception_states "INVALID_CURRENT_INDEX", "INVALID_VOLTAGE_INDEX"
 
     port_driven
 end

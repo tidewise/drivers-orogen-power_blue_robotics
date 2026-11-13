@@ -1,55 +1,39 @@
+# frozen_string_literal: true
+
 name "power_blue_robotics"
-# Optionally declare the version number
-# version "0.1"
 
-# If new data types need to be defined, they have to be put in a separate C++
-# header, and this header will be loaded here
 import_types_from "power_blue_roboticsTypes.hpp"
-# Finally, it is pretty common that headers are directly loaded from an external
-# library. In this case, the library must be first used (the name is the
-# library's pkg-config name) and then the header can be used. Following Rock
-# conventions, a common use-case would be:
-#
-# using_library "power_blue_robotics"
-# import_types_from "power_blue_robotics/CustomType.hpp"
-
-# If this project uses data types that are defined in other oroGen projects,
-# these projects should be imported there as well.
+import_types_from "power_base"
 import_types_from "std"
-# import_types_from "base"
+import_types_from "raw_io"
 
-# Declare a new task context (i.e., a component)
-#
-# The corresponding C++ class can be edited in tasks/Task.hpp and
-# tasks/Task.cpp, and will be put in the power_blue_robotics namespace.
-task_context "Task" do
-    # This is the default from now on, and should not be removed. Rock will
-    # transition to a setup where all components use a configuration step.
+# Outputs the current and the voltage readings of the bluerobotics Power Sense Module
+task_context "PowerSenseModuleTask" do
     needs_configuration
 
-    # A configuration property (here, a std::string). Its value can be retrieved
-    # in the C++ code with # _config_value.get() and _config_value.set(new_value).
-    property "config_value", "/std/string"
+    # Gain applied to the offset-corrected analog reading to convert it to
+    # measured system voltage (V/V)
+    property "voltage_gain", "double", 11.0
+    # Voltage offset (in Volts) subtracted from the analog voltage reading
+    # before applying the gain
+    property "voltage_offset", "double", 0.0
+    # Gain applied to the offset-corrected analog reading to convert it to
+    # electric current (A/V)
+    property "current_gain", "double", 37.8788
+    # Current offset (in Volts) subtracted from the analog voltage reading
+    # before applying the gain
+    property "current_offset", "double", 0.33
+    # Index within the analog_samples port data for current sensing
+    property "current_index", "int", -1
+    # Index within the analog_samples port data for voltage sensing
+    property "voltage_index", "int", -1
 
-    # An input port, i.e. an object from which the component gets data from
-    # other components' outputs
-    #
-    # Data can be retrieved using _input.read(value), which returns true if data
-    # was available, and false otherwise. _input.connected() returns if this
-    # input is connected to an output or not.
-    input_port "input", "/std/string"
+    input_port "analog_samples", "/std/vector<raw_io/Analog>"
 
-    # An output port, i.e. an object to which the component pushes data so that
-    # it is transmitted to other components' inputs
-    #
-    # Data can be written using _output.write(value). _output.connected() returns
-    # if this output is connected to an input or not.
-    output_port "output", "int"
+    output_port "voltage", "/power_base/samples/Voltage"
+    output_port "current", "/power_base/samples/Current"
 
-    # If you want that component's updateHook() to be executed when the "input"
-    # port gets data, uncomment this and comment the 'periodic' line
-    # port_driven "input"
-    # By default, the task will be periodic with a period of 0.1
-    periodic 0.1
+    exception_states "INVALID_CURRENT_INDEX", "INVALID_VOLTAGE_INDEX"
+
+    port_driven
 end
-

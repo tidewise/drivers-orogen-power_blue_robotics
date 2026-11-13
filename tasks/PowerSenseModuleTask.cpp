@@ -32,6 +32,10 @@ bool PowerSenseModuleTask::configureHook()
         throw std::invalid_argument(
             "voltage_index must be non-negative, got " + std::to_string(m_voltage_index));
     }
+
+    if (m_voltage_index == m_current_index) {
+        throw std::invalid_argument("voltage_index must be different from current_index");
+    }
     m_voltage_gain = _voltage_gain.get();
     m_voltage_offset = _voltage_offset.get();
     m_current_gain = _current_gain.get();

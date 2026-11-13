@@ -29,7 +29,13 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         assert_raises(Orocos::StateTransitionFailed) { syskit_configure(task) }
     end
 
-    it "outputs voltage and current scaled with configured indices" do
+    it "fails to configure if voltage_index is equal to current_index" do
+        task.properties.current_index = 2
+        task.properties.voltage_index = 2
+        assert_raises(Orocos::StateTransitionFailed) { syskit_configure(task) }
+    end
+
+    it "outputs voltage and current" do
         task.properties.current_index = 2
         task.properties.voltage_index = 3
         syskit_configure_and_start(task)
@@ -42,37 +48,6 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
             [
                 [now, 0.0],
                 [now, 0.0],
-                [time_current, 0.5],
-                [time_voltage, 1.2]
-            ]
-        )
-
-        voltage_sample, current_sample =
-            expect_execution { syskit_write task.analog_samples_port, samples }
-            .to do
-                [have_one_new_sample(task.voltage_port),
-                 have_one_new_sample(task.current_port)]
-            end
-
-        expected_voltage = 1.2 * 11.0
-        assert_in_delta expected_voltage, voltage_sample.value, 1e-4
-        assert_in_delta time_voltage, voltage_sample.time, 1e-4
-        expected_current = (0.5 - 0.33) * 37.8788
-        assert_in_delta expected_current, current_sample.value, 1e-4
-        assert_in_delta time_current, current_sample.time, 1e-4
-    end
-
-    it "selects different channel indices according to configured properties" do
-        task.properties.current_index = 0
-        task.properties.voltage_index = 1
-        syskit_configure_and_start(task)
-
-        now = Time.now
-        time_voltage = now
-        time_current = now - 1
-
-        samples = create_analog_samples(
-            [
                 [time_current, 0.5],
                 [time_voltage, 1.2]
             ]

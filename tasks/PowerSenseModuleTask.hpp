@@ -13,6 +13,10 @@ namespace power_blue_robotics {
     private:
         int m_current_index = -1;
         int m_voltage_index = -1;
+        double m_voltage_gain = 11.0; 
+        double m_voltage_offset = 0.0;
+        double m_current_gain = 37.8788;
+        double m_current_offset = 0.33;
 
     public:
         PowerSenseModuleTask(
@@ -25,9 +29,6 @@ namespace power_blue_robotics {
         void stopHook();
         void cleanupHook();
     };
-    static constexpr double VOLTAGE_GAIN = 11.0;
-    static constexpr double CURRENT_OFFSET = 0.33;
-    static constexpr double CURRENT_GAIN = 37.8788;
 }
 
 #endif

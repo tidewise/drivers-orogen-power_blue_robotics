@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 name "power_blue_robotics"
 
 import_types_from "power_blue_roboticsTypes.hpp"
@@ -10,6 +12,18 @@ import_types_from "raw_io"
 task_context "PowerSenseModuleTask" do
     needs_configuration
 
+    # Gain applied to the offset-corrected analog reading to convert it to 
+    # measured system voltage (V/V)
+    property "voltage_gain", "double", 11.0
+    # Voltage offset (in Volts) subtracted from the analog voltage reading
+    # before applying the gain
+    property "voltage_offset", "double", 0.0
+    # Gain applied to the offset-corrected analog reading to convert it to
+    # electric current (A/V)
+    property "current_gain", "double", 37.8788
+    # Current offset (in Volts) subtracted from the analog voltage reading
+    # before applying the gain
+    property "current_offset", "double", 0.33
     # Index within the analog_samples port data for current sensing
     property "current_index", "int", -1
     # Index within the analog_samples port data for voltage sensing

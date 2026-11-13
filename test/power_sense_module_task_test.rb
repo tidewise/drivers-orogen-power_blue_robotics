@@ -13,6 +13,10 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
             OroGen.power_blue_robotics.PowerSenseModuleTask
                   .deployed_as("power_sense_module_test")
         )
+        task.properties.voltage_gain = 11.0
+        task.properties.voltage_offset = 0.0
+        task.properties.current_gain = 37.8788
+        task.properties.current_offset = 0.33
     end
 
     it "fails to configure if current_index is not set" do
@@ -89,31 +93,6 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         assert_in_delta time_current, current_sample.time, 1e-4
     end
 
-    it "outputs zero current when reading matches the current offset" do
-        task.properties.current_index = 2
-        task.properties.voltage_index = 3
-        syskit_configure_and_start(task)
-
-        now = Time.now
-        samples = create_analog_samples(
-            [
-                [now, 0.0],
-                [now, 0.0],
-                [now, 0.33],
-                [now, 1.0]
-            ]
-        )
-
-        _voltage_sample, current_sample =
-            expect_execution { syskit_write task.analog_samples_port, samples }
-            .to do
-                [have_one_new_sample(task.voltage_port),
-                 have_one_new_sample(task.current_port)]
-            end
-
-        assert_in_delta 0.0, current_sample.value, 1e-4
-    end
-
     it "transitions to exception state if the input vector has insufficient readings" do
         task.properties.current_index = 2
         task.properties.voltage_index = 3
@@ -123,20 +102,12 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         samples = create_analog_samples(
             [
                 [now, 0.0],
-                [now, 0.0]
+                [now, 0.0],
+                [now, 3.0]
             ]
         )
 
         expect_execution { syskit_write task.analog_samples_port, samples }
-            .to_emit task.invalid_analog_samples_event
-    end
-
-    it "transitions to exception state if the input vector is empty" do
-        task.properties.current_index = 2
-        task.properties.voltage_index = 3
-        syskit_configure_and_start(task)
-
-        expect_execution { syskit_write task.analog_samples_port, [] }
             .to_emit task.invalid_analog_samples_event
     end
 

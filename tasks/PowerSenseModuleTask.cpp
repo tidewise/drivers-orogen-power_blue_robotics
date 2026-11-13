@@ -32,6 +32,10 @@ bool PowerSenseModuleTask::configureHook()
         throw std::invalid_argument(
             "voltage_index must be non-negative, got " + std::to_string(m_voltage_index));
     }
+    m_voltage_gain = _voltage_gain.get();
+    m_voltage_offset = _voltage_offset.get();
+    m_current_gain = _current_gain.get();
+    m_current_offset = _current_offset.get();
 
     return true;
 }
@@ -58,11 +62,12 @@ void PowerSenseModuleTask::updateHook()
 
     power_base::samples::Voltage voltage;
     voltage.time = analog_samples[m_voltage_index].time;
-    voltage.value = analog_samples[m_voltage_index].data * VOLTAGE_GAIN;
+    float voltage_reading_voltage = analog_samples[m_voltage_index].data;
+    voltage.value = (voltage_reading_voltage - m_voltage_offset) * m_voltage_gain;
     power_base::samples::Current current;
     current.time = analog_samples[m_current_index].time;
     float current_reading_voltage = analog_samples[m_current_index].data;
-    current.value = (current_reading_voltage - CURRENT_OFFSET) * CURRENT_GAIN;
+    current.value = (current_reading_voltage - m_current_offset) * m_current_gain;
 
     _voltage.write(voltage);
     _current.write(current);

@@ -8,7 +8,6 @@ import_types_from "std"
 import_types_from "raw_io"
 
 # Outputs the current and the voltage readings of the bluerobotics Power Sense Module
-# connected to an ADS1115
 task_context "PowerSenseModuleTask" do
     needs_configuration
 

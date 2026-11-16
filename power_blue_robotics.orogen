@@ -30,8 +30,7 @@ task_context "PowerSenseModuleTask" do
 
     input_port "analog_samples", "/std/vector<raw_io/Analog>"
 
-    output_port "voltage", "/power_base/samples/Voltage"
-    output_port "current", "/power_base/samples/Current"
+    output_port "dc_source_status", "/power_base/DCSourceStatus"
 
     exception_states "INVALID_CURRENT_INDEX", "INVALID_VOLTAGE_INDEX"
 

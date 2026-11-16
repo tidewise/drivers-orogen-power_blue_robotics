@@ -35,7 +35,7 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
         assert_raises(Orocos::StateTransitionFailed) { syskit_configure(task) }
     end
 
-    it "outputs voltage and current" do
+    it "outputs dc_source_status" do
         task.properties.current_index = 2
         task.properties.voltage_index = 3
         syskit_configure_and_start(task)
@@ -53,19 +53,15 @@ describe OroGen.power_blue_robotics.PowerSenseModuleTask do
             ]
         )
 
-        voltage_sample, current_sample =
+        status_sample =
             expect_execution { syskit_write task.analog_samples_port, samples }
-            .to do
-                [have_one_new_sample(task.voltage_port),
-                 have_one_new_sample(task.current_port)]
-            end
+            .to { have_one_new_sample(task.dc_source_status_port) }
 
         expected_voltage = 1.2 * 11.0
-        assert_in_delta expected_voltage, voltage_sample.value, 1e-4
-        assert_in_delta time_voltage, voltage_sample.time, 1e-4
+        assert_in_delta expected_voltage, status_sample.voltage, 1e-4
         expected_current = (0.5 - 0.33) * 37.8788
-        assert_in_delta expected_current, current_sample.value, 1e-4
-        assert_in_delta time_current, current_sample.time, 1e-4
+        assert_in_delta expected_current, status_sample.current, 1e-4
+        assert_in_delta time_voltage, status_sample.time, 1e-4
     end
 
     it "transitions to exception if current_index is out of bounds" do

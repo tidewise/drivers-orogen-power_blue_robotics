@@ -1,8 +1,8 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
 #include "PowerSenseModuleTask.hpp"
-#include <power_base/samples/Current.hpp>
-#include <power_base/samples/Voltage.hpp>
+#include <algorithm>
+#include <power_base/DCSourceStatus.hpp>
 #include <string>
 
 using namespace power_blue_robotics;
@@ -68,17 +68,15 @@ void PowerSenseModuleTask::updateHook()
         return;
     }
 
-    power_base::samples::Voltage voltage;
-    voltage.time = analog_samples[m_voltage_index].time;
+    power_base::DCSourceStatus status;
+    status.time = std::max(analog_samples[m_voltage_index].time,
+        analog_samples[m_current_index].time);
     float voltage_reading_voltage = analog_samples[m_voltage_index].data;
-    voltage.value = (voltage_reading_voltage - m_voltage_offset) * m_voltage_gain;
-    power_base::samples::Current current;
-    current.time = analog_samples[m_current_index].time;
+    status.voltage = (voltage_reading_voltage - m_voltage_offset) * m_voltage_gain;
     float current_reading_voltage = analog_samples[m_current_index].data;
-    current.value = (current_reading_voltage - m_current_offset) * m_current_gain;
+    status.current = (current_reading_voltage - m_current_offset) * m_current_gain;
 
-    _voltage.write(voltage);
-    _current.write(current);
+    _dc_source_status.write(status);
 }
 void PowerSenseModuleTask::errorHook()
 {
